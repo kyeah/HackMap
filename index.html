@@ -5,15 +5,23 @@
     <title>The HTML5 Herald</title>
     <meta name="description" content="The HTML5 Herald">
     <meta name="author" content="SitePoint">
-
-    <link rel="stylesheet" href="css/styles.css?v=1.0">
-
-      <!--[if lt IE 9]>
-  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="css/map.css" />
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+    <!--[if lt IE 9]>
+        <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
   </head>
 
   <body>
-    <script src="js/scripts.js"></script>
+    <div id="map"></div>
+    <div id="menu">
+      <a href="#2011" id="2011" class="button 2011">2011</a>
+      <a href="#2012" id="2012" class="button 2012">2012</a>
+      <a href="#2013" id="2013" class="button 2013">2013</a>
+      <a href="#2014" id="2014" class="button 2014">2014</a>
+      <a href="#2015" id="2015" class="button 2015">2015</a>
+    </div>
+    <script src="js/map.js" defer></script>
   </body>
 </html>
