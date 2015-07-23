@@ -51,12 +51,29 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
 $('.button').click(function() {
     $('.button').removeClass('selected');
     $(this).addClass('selected');
-    var checked = $('.button.selected').map(function() { return "'%" + this.id + "'" }).get();
 
-    var sql = "SELECT * FROM hlcp_2 WHERE date LIKE (" + checked.join() + ")";
+    var sql = "SELECT * FROM hlcp_2";
+    if ($(this).attr('id') != 'all_years') {
+        var checked = $('.button.selected').map(function() { return "'%" + this.id + "'" }).get();
+        sql = "SELECT * FROM hlcp_2 WHERE date LIKE (" + checked.join() + ")";
+    }
+
     sublayers[0].setSQL(clusterSQLpre + sql + clusterSQLpost);
     sublayers[1].setSQL(sql);
     sublayers[2].setSQL(sql);
 
     return true;
+});
+
+$('#layer_selector li').click(function(e) {
+    $('#layer_selector li').removeClass('selected');
+    var index = parseInt($(e.target).attr('data'))    
+    for (i = 0; i < sublayers.length; i++) {
+        if (i == index) {
+            sublayers[i].show();
+            $(e.target).addClass('selected');
+        } else {
+            sublayers[i].hide();
+        }
+    }
 });
