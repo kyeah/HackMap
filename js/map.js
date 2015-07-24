@@ -2,6 +2,7 @@ var clusterSQLpre = "WITH meta AS (    SELECT greatest(!pixel_width!,!pixel_heig
 
 var clusterSQLpost = ") t, meta m WHERE t.the_geom_webmercator && m.ext  ), bucketA_snap AS (SELECT ST_SnapToGrid(f.the_geom_webmercator, 0, 0, m.psz * 48, m.psz * 48) the_geom_webmercator, count(*) as points_count, 1 as cartodb_id, array_agg(f.cartodb_id) AS id_list  FROM filtered_table f, meta m  GROUP BY ST_SnapToGrid(f.the_geom_webmercator, 0, 0, m.psz * 48, m.psz * 48), m.xmin, m.ymin), bucketA  AS (SELECT * FROM bucketA_snap WHERE points_count >  48 * 1 ) , bucketB_snap AS (SELECT ST_SnapToGrid(f.the_geom_webmercator, 0, 0, m.psz * 0.75 * 48, m.psz * 0.75 * 48) the_geom_webmercator, count(*) as points_count, 1 as cartodb_id, array_agg(f.cartodb_id) AS id_list  FROM filtered_table f, meta m  WHERE cartodb_id NOT IN (select unnest(id_list) FROM bucketA)  GROUP BY ST_SnapToGrid(f.the_geom_webmercator, 0, 0, m.psz * 0.75 * 48, m.psz * 0.75 * 48), m.xmin, m.ymin), bucketB  AS (SELECT * FROM bucketB_snap WHERE points_count >  48 * 0.75 ) , bucketC_snap AS (SELECT ST_SnapToGrid(f.the_geom_webmercator, 0, 0, m.psz * 0.5 * 48, m.psz * 0.5 * 48) the_geom_webmercator, count(*) as points_count, 1 as cartodb_id, array_agg(f.cartodb_id) AS id_list  FROM filtered_table f, meta m  WHERE cartodb_id NOT IN (select unnest(id_list) FROM bucketA)  AND cartodb_id NOT IN (select unnest(id_list) FROM bucketB)  GROUP BY ST_SnapToGrid(f.the_geom_webmercator, 0, 0, m.psz * 0.5 * 48, m.psz * 0.5 * 48), m.xmin, m.ymin), bucketC  AS (SELECT * FROM bucketC_snap WHERE points_count >  GREATEST(48 * 0.1, 2)  )  SELECT the_geom_webmercator, 1 points_count, cartodb_id, ARRAY[cartodb_id] as id_list, 'origin' as src, cartodb_id::text cdb_list FROM filtered_table WHERE cartodb_id NOT IN (select unnest(id_list) FROM bucketA) AND cartodb_id NOT IN (select unnest(id_list) FROM bucketB) AND cartodb_id NOT IN (select unnest(id_list) FROM bucketC)  UNION ALL SELECT *, 'bucketA' as src, array_to_string(id_list, ',') cdb_list FROM bucketA UNION ALL SELECT *, 'bucketB' as src, array_to_string(id_list, ',') cdb_list FROM bucketB UNION ALL SELECT *, 'bucketC' as src, array_to_string(id_list, ',') cdb_list FROM bucketC";
 
+var filterSQL = "";
 var sublayers = [];
 var mylayers = [];
 
@@ -39,8 +40,8 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
             var content = '';
             var clickPosLatLng = this.model.get('latlng');            
             var radius = 1;
-            //var q = 
-            var url = "http://kyeah.cartodb.com/api/v2/sql?q=SELECT%20name,description,date,location,link,image_link,year%20from%20hlcp_2%20where%20st_dWithin(the_geom,'SRID=4326;POINT(" + clickPosLatLng[1] + "%20" + clickPosLatLng[0] + ")%27,%20"+radius+"%20" +'%29%20ORDER%20BY%20timestamp%20DESC,%20name%20ASC';
+
+            var url = "http://kyeah.cartodb.com/api/v2/sql?q=SELECT%20name,description,date,location,link,image_link,year%20from%20hlcp_2%20where" + filterSQL + "%20st_dWithin(the_geom,'SRID=4326;POINT(" + clickPosLatLng[1] + "%20" + clickPosLatLng[0] + ")%27,%20"+radius+"%20%29%20ORDER%20BY%20timestamp%20DESC,%20name%20ASC";
 
             $.ajax({
                 async: false,
@@ -115,9 +116,11 @@ $('.button').click(function() {
     $(this).addClass('selected');
 
     var sql = "SELECT * FROM hlcp_2";
+    filterSQL = "";
     if ($(this).attr('id') != 'all_years') {
-        var checked = $('.button.selected').map(function() { return "'%" + this.id + "'" }).get();
-        sql = "SELECT * FROM hlcp_2 WHERE date LIKE (" + checked.join() + ")";
+        var checked = $('.button.selected').map(function() { return "'" + this.id + "'" }).get();        
+        filterSQL = "%20year%20IN%20(" + checked.join() + ")%20AND";
+        sql = "SELECT * FROM hlcp_2 WHERE year IN (" + checked.join() + ")";
     }
 
     sublayers[0].setSQL(clusterSQLpre + sql + clusterSQLpost);
