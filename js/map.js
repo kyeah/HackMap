@@ -7,7 +7,7 @@ var mylayers = [];
 
 cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e5-b4e8-0e9d821ea90d/viz.json')
     .on('done', function(map, layers) {
-        
+
         // Sorry...hardcoded for now.
         var cluster_sublayer = layers[1].getSubLayer(0);
         var info_sublayer = layers[1].getSubLayer(1);
@@ -22,31 +22,121 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
         info_sublayer.setSQL(allSQL);
         time_sublayer.setSQL(allSQL);
 
-        /*
-          map.overlayMapTypes.setAt(1, layers[1]);
-          var sublayer = layer[1].getSubLayer(0);
-          sublayer.setCartoCSS(systemcartoCSS);
+        var infowindow = info_sublayer.infowindow;
+        infowindow.set('template', function(data) {
+            var pre = '<div class="cartodb-popup v2"> \
+               <a href="#close" class="cartodb-popup-close-button close">x</a> \
+               <div class="cartodb-popup-content-wrapper"> \
+                 <div class="cartodb-popup-content">';
 
-          layers.SystemLyr = sublayer
-          var infowindow = sublayer.infowindow
+            var post = ' \
+                 </div> \
+               </div> \
+             <div class="cartodb-popup-tip-container"></div> \
+             </div>';
 
-          infowindow.set('template', function(data) {
+            var content = '';
+            var clickPosLatLng = this.model.get('latlng');            
+            var radius = 1;
+            //var q = 
+            var url = "http://kyeah.cartodb.com/api/v2/sql?q=SELECT%20name,description,date,location,link,year%20from%20hlcp_2%20where%20st_dWithin(the_geom,'SRID=4326;POINT(" + clickPosLatLng[1] + "%20" + clickPosLatLng[0] + ")%27,%20"+radius+"%20" +'%29%20ORDER%20BY%20timestamp%20DESC,%20name%20ASC';
 
-          var clickPosLatLng = this.model.get('latlng');
-          var fields = this.model.get('content').fields;
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: url, 
+                success: function(data) {
+                    _.map(data.rows, function(r) {
+                        var name = r.name;
+                        if (name.indexOf(r.year) == -1 && r.year) {
+                            name += " (" + r.year + ")"
+                        }
 
-          if (fields && fields[0].type !== 'loading') {
+                        var description = "";
+                        if (r.description) {
+                            description = '<h4>description</h4> \
+                        <p>' + r.description + '</p>';
+                        }
 
-          var obj = _.find(fields, function(obj) {
-          return obj.title == 'kml_key'
-          }).value
+                        content += '\
+                        <p class="info-row">' + name + '</p> \
+                        <div class="hackathon_info" style="display:none"> \
+                        <div class="back">back</div> \
+                        <h4>name</h4> \
+                        <p>' + r.name + '</p> '
+                        + description + ' \
+                        <h4>date</h4> \
+                        <p>' + r.date + '</p> \
+                        <h4>location</h4> \
+                        <p>' + r.location + '</p> \
+                        <h4>link</h4> \
+                        <p><a href="' + r.link + '" target="_blank">Link</a></p> \
+                        </div>';
+                    });
+                }
+            });
+            
+            return pre + content + post;
+        });
 
-          callinfowindow(clickPosLatLng, obj)
+        $(".cartodb-infowindow").on("click", ".info-row", function(e) {
+            var next = $(e.target).next();
+            console.log(next);
+            if (next.css("display") === "none") {
+                next.css("display", "block");
+            } else {
+                next.css("display", "none");
+            }
+            $(".info-row").css("display", "none");
+        });
 
-          }
-          }); // end infowindow set
-        */
+        $(".cartodb-infowindow").on("click", ".back", function(e) {
+            $(e.target).parent().css("display", "none");
+            $(".info-row").css("display", "block");
+        });        
     });
+
+
+function callinfowindow(clickPosLatLng, obj) {
+
+    console.log("getting data");
+    $.get(url, function(data) {
+        console.log("got data: " + data);
+        console.log(data.rows);
+        var em = $('<div class="cartodb-popup-content jspScrollable" style="max-height: 180px; overflow: hidden; padding: 0px; width: 202px;" tabindex="0">');
+        _.map(data.rows, function(r) {
+            var element = $('<li><a href="#" onClick="return false;">' + r.name + '</a></li>');
+            em.append(element);
+        });
+        $('.cartodb-popup-wrapper').append(em);
+    });
+
+    return $('#infowindow_template').html();
+}
+/*
+  map.overlayMapTypes.setAt(1, layers[1]);
+  var sublayer = layer[1].getSubLayer(0);
+  sublayer.setCartoCSS(systemcartoCSS);
+
+  layers.SystemLyr = sublayer
+  var infowindow = sublayer.infowindow
+
+  infowindow.set('template', function(data) {
+
+  var clickPosLatLng = this.model.get('latlng');
+  var fields = this.model.get('content').fields;
+
+  if (fields && fields[0].type !== 'loading') {
+
+  var obj = _.find(fields, function(obj) {
+  return obj.title == 'kml_key'
+  }).value
+
+  callinfowindow(clickPosLatLng, obj)
+
+  }
+  }); // end infowindow set
+*/
 
 $('.button').click(function() {
     $('.button').removeClass('selected');
@@ -67,7 +157,7 @@ $('.button').click(function() {
 
 $('#layer_selector li').click(function(e) {
     $('#layer_selector li').removeClass('selected');
-    var index = parseInt($(e.target).attr('data'))    
+    var index = parseInt($(e.target).attr('data'))
     for (i = 0; i < sublayers.length; i++) {
         if (i == index) {
             sublayers[i].show();

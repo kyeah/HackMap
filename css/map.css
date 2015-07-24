@@ -64,3 +64,22 @@ html, body {
 #layer_selector li:hover {
     color: #F84F40;
 }
+
+.info-row:hover {
+    color: #F84F40;
+    cursor: pointer;
+}
+
+.hackathon_info {
+    transition: display 1s linear;
+}
+
+.hackathon_info h4 {
+    color: #F84F40 !important;
+}
+
+.back:hover {
+    width: 100%;
+    background: #F84F40;
+    cursor: pointer;
+}
