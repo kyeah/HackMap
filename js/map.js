@@ -94,7 +94,6 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
 
         $(".cartodb-infowindow").on("click", ".info-row", function(e) {
             var next = $(e.target).next();
-            console.log(next);
             if (next.css("display") === "none") {
                 next.css("display", "block");
             } else {
@@ -110,48 +109,6 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
             $(".back").css("display", "none");
         });        
     });
-
-
-function callinfowindow(clickPosLatLng, obj) {
-
-    console.log("getting data");
-    $.get(url, function(data) {
-        console.log("got data: " + data);
-        console.log(data.rows);
-        var em = $('<div class="cartodb-popup-content jspScrollable" style="max-height: 180px; overflow: hidden; padding: 0px; width: 202px;" tabindex="0">');
-        _.map(data.rows, function(r) {
-            var element = $('<li><a href="#" onClick="return false;">' + r.name + '</a></li>');
-            em.append(element);
-        });
-        $('.cartodb-popup-wrapper').append(em);
-    });
-
-    return $('#infowindow_template').html();
-}
-/*
-  map.overlayMapTypes.setAt(1, layers[1]);
-  var sublayer = layer[1].getSubLayer(0);
-  sublayer.setCartoCSS(systemcartoCSS);
-
-  layers.SystemLyr = sublayer
-  var infowindow = sublayer.infowindow
-
-  infowindow.set('template', function(data) {
-
-  var clickPosLatLng = this.model.get('latlng');
-  var fields = this.model.get('content').fields;
-
-  if (fields && fields[0].type !== 'loading') {
-
-  var obj = _.find(fields, function(obj) {
-  return obj.title == 'kml_key'
-  }).value
-
-  callinfowindow(clickPosLatLng, obj)
-
-  }
-  }); // end infowindow set
-*/
 
 $('.button').click(function() {
     $('.button').removeClass('selected');
