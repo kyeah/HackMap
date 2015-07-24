@@ -65,6 +65,7 @@ html, body {
     color: #F84F40;
 }
 
+/* Infowindow */
 .info-row:hover {
     color: #F84F40;
     cursor: pointer;
@@ -78,8 +79,27 @@ html, body {
     color: #F84F40 !important;
 }
 
-.back:hover {
-    width: 100%;
-    background: #F84F40;
-    cursor: pointer;
+a.cartodb-popup-back-button {
+    left: -12px;
+    top: -12px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    -webkit-border-radius: 18px;
+    -moz-border-radius: 18px;
+    border-radius: 18px;
+    box-shadow: 0 0 0 3px rgba(0,0,0,.15);
+    position: absolute;
+    padding: 0;
+    color: #0078A8;
+    text-decoration: none;
+    text-align: center;
+}
+
+.leaflet-container img.info_image {
+    width:auto;
+    height:auto;
+    max-height:190px;
+    max-width:190px !important;
+    margin-bottom:4px;
 }

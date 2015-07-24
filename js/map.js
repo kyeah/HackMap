@@ -26,6 +26,7 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
         infowindow.set('template', function(data) {
             var pre = '<div class="cartodb-popup v2"> \
                <a href="#close" class="cartodb-popup-close-button close">x</a> \
+               <a href="#back" class="cartodb-popup-back-button back" style="display:none">&#60;</a> \
                <div class="cartodb-popup-content-wrapper"> \
                  <div class="cartodb-popup-content">';
 
@@ -39,7 +40,7 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
             var clickPosLatLng = this.model.get('latlng');            
             var radius = 1;
             //var q = 
-            var url = "http://kyeah.cartodb.com/api/v2/sql?q=SELECT%20name,description,date,location,link,year%20from%20hlcp_2%20where%20st_dWithin(the_geom,'SRID=4326;POINT(" + clickPosLatLng[1] + "%20" + clickPosLatLng[0] + ")%27,%20"+radius+"%20" +'%29%20ORDER%20BY%20timestamp%20DESC,%20name%20ASC';
+            var url = "http://kyeah.cartodb.com/api/v2/sql?q=SELECT%20name,description,date,location,link,image_link,year%20from%20hlcp_2%20where%20st_dWithin(the_geom,'SRID=4326;POINT(" + clickPosLatLng[1] + "%20" + clickPosLatLng[0] + ")%27,%20"+radius+"%20" +'%29%20ORDER%20BY%20timestamp%20DESC,%20name%20ASC';
 
             $.ajax({
                 async: false,
@@ -58,10 +59,22 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
                         <p>' + r.description + '</p>';
                         }
 
+                        var linkname = "Link";
+                        if (r.link.indexOf("hackerleague") > -1) {
+                            linkname = "Hacker League";
+                        } else if (r.link.indexOf("challengepost") > -1) {
+                            linkname = "ChallengePost";
+                        }
+
+                        var image_link = r.image_link;
+                        if (!image_link.startsWith("http")) {
+                            image_link = "http://" + image_link;
+                        }
+
                         content += '\
                         <p class="info-row">' + name + '</p> \
                         <div class="hackathon_info" style="display:none"> \
-                        <div class="back">back</div> \
+                        <img src="' + image_link + '" class="info_image"></img> \
                         <h4>name</h4> \
                         <p>' + r.name + '</p> '
                         + description + ' \
@@ -70,7 +83,7 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
                         <h4>location</h4> \
                         <p>' + r.location + '</p> \
                         <h4>link</h4> \
-                        <p><a href="' + r.link + '" target="_blank">Link</a></p> \
+                        <p><a href="' + r.link + '" target="_blank">' + linkname + '</a></p> \
                         </div>';
                     });
                 }
@@ -88,11 +101,13 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
                 next.css("display", "none");
             }
             $(".info-row").css("display", "none");
+            $(".back").css("display", "initial");
         });
 
         $(".cartodb-infowindow").on("click", ".back", function(e) {
-            $(e.target).parent().css("display", "none");
+            $(".hackathon_info").css("display", "none");
             $(".info-row").css("display", "block");
+            $(".back").css("display", "none");
         });        
     });
 
