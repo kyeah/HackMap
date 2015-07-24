@@ -49,7 +49,9 @@ func main() {
                                 href, exists := s.Attr("href")
                                 if !exists {
                                         fmt.Printf("NO HREF\n")
-                                }
+                                } else {
+					href = strings.Replace(href, 'https://', 'http://', 1)
+				}
 
                                 name := s.Text()
                                 var image string
@@ -86,14 +88,16 @@ func main() {
 				}
 
 				var timestamp int64
+				var year string
 				if date != "" {
-					date_parse, _ := strconv.ParseInt(date[len(date)-4: len(date)], 0, 32)
+					year = date[len(date)-4: len(date)]
+					date_parse, _ := strconv.ParseInt(year, 0, 32)
 					stuff_parse := month_to_int(date[0:3])
 					timestamp = 12*(date_parse - 2011) + stuff_parse
 				}
 
 				// Write csv
-				item := []string{hl_prefix + href, name, hl_prefix + image, location, city, state, date, strconv.Itoa(int(timestamp)), "", ""}
+				item := []string{hl_prefix + href, name, hl_prefix + image, location, city, state, date, strconv.Itoa(int(timestamp)), "", "", year}
                                 err := writer.Write(item)
                                 if err != nil {
                                         fmt.Println("Error:", err)

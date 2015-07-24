@@ -82,8 +82,10 @@ func main() {
                                 fmt.Printf("href: %s\nname: %s\nlocation: %s\ndate: %s\nimage: %s\ndescription: %s\ncountry: %s\n", href, name, location, date, image, description, country)
 				
 				var timestamp int64
+				var year string
 				if date != "" {
-					date_parse, _ := strconv.ParseInt(date[len(date)-4: len(date)], 0, 32)
+					year = date[len(date)-4: len(date)]
+					date_parse, _ := strconv.ParseInt(year, 0, 32)
 					stuff_parse := month_to_int(date[0:3])
 					timestamp = 12*(date_parse - 2011) + stuff_parse
 				}
