@@ -128,7 +128,6 @@ $('.button').click(function() {
 
     sublayers[0].setSQL(clusterSQLpre + sql + clusterSQLpost);
     sublayers[1].setSQL(sql);
-    sublayers[2].setSQL(sql);
 
     return true;
 });
