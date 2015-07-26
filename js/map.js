@@ -22,6 +22,9 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
         cluster_sublayer.setSQL(clusterSQLpre + allSQL + clusterSQLpost);
         info_sublayer.setSQL(allSQL);
         time_sublayer.setSQL(allSQL);
+        cluster_sublayer.show();
+        info_sublayer.hide();
+        time_sublayer.hide();
 
         var infowindow = info_sublayer.infowindow;
         infowindow.set('template', function(data) {
