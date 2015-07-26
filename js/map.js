@@ -26,8 +26,8 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
         var infowindow = info_sublayer.infowindow;
         infowindow.set('template', function(data) {
             var pre = '<div class="cartodb-popup v2"> \
-               <a href="#close" class="cartodb-popup-close-button close">x</a> \
-               <a href="#back" class="cartodb-popup-back-button back" style="display:none">&#60;</a> \
+               <a class="cartodb-popup-close-button close">x</a> \
+               <a class="cartodb-popup-back-button back" style="display:none">&#60;</a> \
                <div class="cartodb-popup-content-wrapper"> \
                  <div class="cartodb-popup-content">';
 

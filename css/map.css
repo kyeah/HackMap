@@ -103,3 +103,7 @@ a.cartodb-popup-back-button {
     max-width:190px !important;
     margin-bottom:4px;
 }
+
+.close, .back {
+    cursor: pointer;
+}
