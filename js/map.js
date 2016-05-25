@@ -41,7 +41,7 @@ cartodb.createVis('map', 'https://kyeah.cartodb.com/api/v2/viz/6f8589b6-2f5a-11e
             var clickPosLatLng = this.model.get('latlng');            
             var radius = 1;
 
-            var url = "http://kyeah.cartodb.com/api/v2/sql?q=SELECT%20name,description,date_string,location,link,image_link,year%20from%20hlcp_2%20where" + filterSQL + "%20st_dWithin(the_geom,'SRID=4326;POINT(" + clickPosLatLng[1] + "%20" + clickPosLatLng[0] + ")%27,%20"+radius+"%20%29%20ORDER%20BY%20timestamp%20DESC,%20name%20ASC";
+            var url = "https://kyeah.cartodb.com/api/v2/sql?q=SELECT%20name,description,date_string,location,link,image_link,year%20from%20hlcp_2%20where" + filterSQL + "%20st_dWithin(the_geom,'SRID=4326;POINT(" + clickPosLatLng[1] + "%20" + clickPosLatLng[0] + ")%27,%20"+radius+"%20%29%20ORDER%20BY%20timestamp%20DESC,%20name%20ASC";
 
             $.ajax({
                 async: false,
